@@ -1,0 +1,41 @@
+# === CLion & JetBrains IDE ===
+.idea/
+*.iws
+*.iml
+*.ipr
+cmake-build-*/
+cmake-build-debug/
+cmake-build-release/
+
+# === CMake & Katalogi budowania ===
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+install_manifest.txt
+compile_commands.json
+
+# === Pliki wykonywalne i binarne (Windows / Linux / macOS) ===
+*.exe
+*.out
+*.app
+*.bin
+*.elf
+
+# === Obiekty kompilacji i biblioteki ===
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+
+# === Pliki tymczasowe systemu i środowiska ===
+.DS_Store
+Thumbs.db
+*.user
+*.suo
+*.userosv
+*.sln.docstates

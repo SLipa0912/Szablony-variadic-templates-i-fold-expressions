@@ -19,11 +19,11 @@ Nazwa pliku wykonywalnego w każdym zadaniu jest taka sama jak nazwa jego katalo
 
 | # | Katalog | Zadanie | Poziom | Szacowany czas |
 |---|---|---|---|---|
-| 1 | `zadanie1/` | Suma i iloczyn wariadyczny (`fold_sum`, `fold_product`) | Proste | 5 min |
-| 2 | `zadanie2/` | Sprawdzanie warunków i typów (`all_true`, `all_same_v`) | Proste | 5 min |
-| 3 | `zadanie3/` | Formater strumieniowy z separatorem (`print_with_sep`) | Średnie | 10 min |
-| 4 | `zadanie4/` | System logowania kontekstowego (`StructuredLogger`) | Zaawansowane | 20 min |
-| 5 | `zadanie5/` | Silnik walidacji obiektów (`validate_all`) | Średnie | 15–20 min |
+| 1 | `zadanie1/` | Suma, iloczyn i kierunek foldu (`fold_sum`, `fold_product`, `fold_minus_left`, `fold_minus_right`) | Proste | 7 min |
+| 2 | `zadanie2/` | Warunki i typy (`all_true`, `any_true`, `all_same_v`, `TypeList`) | Średnie | 10 min |
+| 3 | `zadanie3/` | Fold po przecinku (`print_with_sep`, `emplace_all`) | Średnie | 12 min |
+| 4 | `zadanie4/` | System logowania kontekstowego (`StructuredLogger`) | Zaawansowane | 15 min |
+| 5 | `zadanie5/` | Silnik walidacji obiektów (`validate_all`, `count_failed`) | Średnie | 15 min |
 
 ---
 
@@ -64,8 +64,8 @@ cmake --build build
 
 ## Krótki indeks zadań
 
-* **`zadanie1/`**: Implementacja `fold_sum` oraz `fold_product` z wykorzystaniem unarnych lub binarnych wyrażeń fold (lewo- lub prawostronnych).
-* **`zadanie2/`**: Funkcja `all_true` sprawdzająca warunki logiczne oraz szablon zmiennej `all_same_v` weryfikujący zgodność typów.
-* **`zadanie3/`**: Funkcja `print_with_sep` drukująca dowolną liczbę argumentów rozdzielonych separatorem, bez nadmiarowego separatora na końcu.
+* **`zadanie1/`**: Funkcje `fold_sum` i `fold_product` (fold binarny z wartością początkową, fold w `static_assert`) oraz `fold_minus_left` i `fold_minus_right`, które pokazują różnicę między foldem lewo- i prawostronnym.
+* **`zadanie2/`**: Funkcje `all_true` i `any_true` (fold `&&` i `||`), szablon zmiennej `all_same_v` oraz wariadyczny szablon klasy `TypeList<Ts...>` (`size`, `contains`, `count`).
+* **`zadanie3/`**: Funkcja `print_with_sep` drukująca dowolną liczbę argumentów rozdzielonych separatorem, bez nadmiarowego separatora na końcu, oraz `emplace_all` z perfect forwarding (`Args&&...`, `std::forward`).
 * **`zadanie4/`**: Klasa `StructuredLogger` z metodą `log`, która przyjmuje poziom, komunikat oraz dowolną liczbę par klucz–wartość (poprawność liczby argumentów sprawdza `static_assert`) i drukuje je w jednej linii.
-* **`zadanie5/`**: Funkcja `validate_all` uruchamiająca dowolną liczbę predykatów walidujących na podanym obiekcie (fold `&&`) oraz zliczająca niespełnione warunki.
+* **`zadanie5/`**: Funkcja `validate_all` uruchamiająca dowolną liczbę predykatów walidujących na podanym obiekcie (fold `&&`, z krótkim spięciem) oraz funkcja `count_failed` zliczająca niespełnione warunki (fold `+`).

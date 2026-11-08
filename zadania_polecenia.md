@@ -17,27 +17,26 @@ Dla pustej paczki unarny fold jest dozwolony tylko dla operatorów `&&` (wynik `
 
 ## Zadanie 1: Suma, iloczyn i kierunek foldu (7 min)
 
-**Cel:** fold binarny z wartością początkową, różnica między foldem lewo- i prawostronnym oraz fold w `static_assert`.
+**Cel:** fold binarny z wartością początkową oraz różnica między foldem lewo- i prawostronnym.
 
 **Polecenie**
 
 1. Napisz szablon funkcji `fold_sum`, który zwraca sumę wszystkich argumentów:
    ```cpp
    template <typename... Args>
-   constexpr auto fold_sum(Args... args);
+   auto fold_sum(Args... args);
    ```
 2. Napisz szablon funkcji `fold_product`, który zwraca iloczyn wszystkich argumentów:
    ```cpp
    template <typename... Args>
-   constexpr auto fold_product(Args... args);
+   auto fold_product(Args... args);
    ```
    Dla pustej listy `fold_sum()` zwraca `0`, a `fold_product()` zwraca `1`.
-3. Obie funkcje mają przyjmować wyłącznie typy arytmetyczne. Dla innych typów (np. `std::string`) kompilacja ma kończyć się błędem ze `static_assert`, którego warunek sprawdza całą paczkę naraz.
-4. Napisz funkcje `fold_minus_left` i `fold_minus_right` o tej samej sygnaturze co `fold_sum`:
+3. Napisz funkcje `fold_minus_left` i `fold_minus_right` o tej samej sygnaturze co `fold_sum`:
    * `fold_minus_left(a1, a2, a3, ...)` oblicza `((a1 - a2) - a3) - ...`,
    * `fold_minus_right(a1, a2, a3, ...)` oblicza `a1 - (a2 - (a3 - ...))`.
 
-   Obie wymagają co najmniej jednego argumentu (dla zerowej liczby argumentów mają się nie kompilować).
+   Obie wymagają co najmniej jednego argumentu (unarny fold po `-` nie ma wartości dla pustej paczki).
 
 **Oczekiwane wartości**
 
@@ -61,44 +60,43 @@ Dla tych samych argumentów `fold_minus_left` i `fold_minus_right` dają różne
 
 * Dla sumy i iloczynu użyj binarnego foldu z wartością początkową: `(0 + ... + args)`.
 * Zastanów się, jaką wartość początkową wybrać dla mnożenia (element neutralny).
-* Warunek na typy zapisz jako fold po `&&` nad `std::is_arithmetic_v<Args>` (nagłówek `<type_traits>`).
 * Dla `fold_minus_left` i `fold_minus_right` użyj foldów unarnych, po jednym w każdym kierunku.
 
 ---
 
 ## Zadanie 2: Sprawdzanie warunków i typów (10 min)
 
-**Cel:** fold z operatorami `&&` i `||`, szablon zmiennej oraz wariadyczny szablon klasy.
+**Cel:** fold z operatorami `&&` i `||`, szablon funkcji wywoływany tylko z typami (bez argumentów) oraz wariadyczny szablon klasy.
 
 **Polecenie**
 
 1. Napisz funkcję `all_true`, która zwraca `true`, gdy wszystkie argumenty po rzutowaniu na `bool` są prawdziwe:
    ```cpp
    template <typename... Args>
-   constexpr bool all_true(const Args&... args);
+   bool all_true(const Args&... args);
    ```
    Dla pustej listy argumentów wynik ma być `true`.
 2. Napisz funkcję `any_true`, która zwraca `true`, gdy **co najmniej jeden** argument po rzutowaniu na `bool` jest prawdziwy. Dla pustej listy argumentów wynik ma być `false`.
-3. Napisz szablon zmiennej `all_same_v`, który sprawdza, czy wszystkie podane typy są identyczne z pierwszym:
+3. Napisz szablon funkcji `all_same`, który sprawdza, czy wszystkie podane typy są identyczne z pierwszym. Funkcja nie ma argumentów, typy podaje się jako argumenty szablonu:
    ```cpp
    template <typename T, typename... Ts>
-   inline constexpr bool all_same_v = /* ... */;
+   bool all_same();
    ```
-   `all_same_v<int>` (jeden typ) ma być `true`.
-4. Napisz wariadyczny szablon klasy `TypeList` z trzema składowymi statycznymi:
+   `all_same<int>()` (jeden typ) ma zwracać `true`.
+4. Napisz wariadyczny szablon klasy `TypeList` z trzema statycznymi funkcjami składowymi:
    ```cpp
    template <typename... Ts>
    struct TypeList {
-       static constexpr std::size_t size = /* ... */;                 // liczba typów na liście
+       static std::size_t size();                 // liczba typów na liście
 
        template <typename T>
-       static constexpr bool contains = /* ... */;                    // czy T jest na liście
+       static bool contains();                    // czy T jest na liście
 
        template <typename T>
-       static constexpr std::size_t count = /* ... */;                // ile razy T jest na liście
+       static std::size_t count();                // ile razy T jest na liście
    };
    ```
-   Dla pustej listy: `size == 0`, `contains<T>` jest `false`, a `count<T>` wynosi `0`.
+   Dla pustej listy: `size()` zwraca `0`, `contains<T>()` zwraca `false`, a `count<T>()` zwraca `0`.
 
 **Oczekiwane wartości**
 
@@ -110,23 +108,23 @@ Dla tych samych argumentów `fold_minus_left` i `fold_minus_right` dają różne
 | `any_true(false, 0, 3)` | `true` |
 | `any_true(0, false)` | `false` |
 | `any_true()` | `false` |
-| `all_same_v<int, int, int>` | `true` |
-| `all_same_v<int, int, double>` | `false` |
-| `all_same_v<int>` | `true` |
-| `all_same_v<int, const int>` | `false` |
-| `TypeList<int, char, int>::size` | `3` |
-| `TypeList<int, char>::contains<char>` | `true` |
-| `TypeList<int, char>::contains<double>` | `false` |
-| `TypeList<int, char, int>::count<int>` | `2` |
-| `TypeList<>::size` | `0` |
+| `all_same<int, int, int>()` | `true` |
+| `all_same<int, int, double>()` | `false` |
+| `all_same<int>()` | `true` |
+| `all_same<int, const int>()` | `false` |
+| `TypeList<int, char, int>::size()` | `3` |
+| `TypeList<int, char>::contains<char>()` | `true` |
+| `TypeList<int, char>::contains<double>()` | `false` |
+| `TypeList<int, char, int>::count<int>()` | `2` |
+| `TypeList<>::size()` | `0` |
 
-`std::is_same_v` rozróżnia `const` i referencje, dlatego `all_same_v<int, const int>` jest `false`.
+`std::is_same_v` rozróżnia `const` i referencje, dlatego `all_same<int, const int>()` zwraca `false`.
 
 **Wskazówki**
 
 * W `all_true` i `any_true` użyj `static_cast<bool>(args)` i foldu unarnego po `&&` lub `||`.
-* W `all_same_v` użyj `std::is_same_v<T, Ts>` (nagłówek `<type_traits>`) i foldu po `&&`.
-* `size` to zadanie dla operatora `sizeof...`.
+* W `all_same` użyj `std::is_same_v<T, Ts>` (nagłówek `<type_traits>`) i foldu po `&&`.
+* `size()` zwraca wynik operatora `sizeof...`.
 * `contains` to fold po `||` nad `std::is_same_v<T, Ts>`.
 * `count` zbuduj z foldu binarnego prawostronnego `(wyrażenie + ... + 0)`, gdzie wyrażenie daje `1` dla pasującego typu i `0` dla pozostałych.
 
@@ -202,7 +200,7 @@ Wymagania:
 
 ## Zadanie 4: System logowania kontekstowego (15 min)
 
-**Cel:** przetwarzanie argumentów w parach, `static_assert` na rozmiarze paczki (`sizeof...`) oraz rekurencyjne rozwijanie paczki.
+**Cel:** przetwarzanie argumentów w parach oraz rekurencyjne rozwijanie paczki z przeciążeniami dla przypadków brzegowych.
 
 **Polecenie**
 
@@ -223,7 +221,7 @@ public:
 Wymagania:
 
 1. Argumenty `context` to pary **klucz, wartość**: `klucz1, wartość1, klucz2, wartość2, ...`. Klucze i wartości mogą mieć dowolne typy wypisywalne do strumienia.
-2. Liczba argumentów `context` musi być parzysta. Sprawdź to przez `static_assert(sizeof...(Args) % 2 == 0, "...")`, żeby błąd pojawiał się w czasie kompilacji.
+2. Liczba argumentów `context` może być nieparzysta: ostatni klucz nie ma wtedy wartości i ma zostać wypisany jako `klucz=?`.
 3. Format linii: `[POZIOM] komunikat`, gdzie `POZIOM` to wynik `level_name(level)`. Jeśli są dane kontekstowe, dopisz ` | klucz1=wartość1 klucz2=wartość2 ...`. Bez kontekstu nie wypisuj znaku `|`.
 4. Wartości `bool` wypisuj jako `true` / `false` (`std::boolalpha`).
 5. Każde wywołanie `log` kończy się znakiem nowej linii.
@@ -235,6 +233,7 @@ StructuredLogger logger(std::cout);
 logger.log(Level::Info, "Server started");
 logger.log(Level::Info, "User logged in", "user", "anna", "id", 42);
 logger.log(Level::Error, "Payment failed", "order", 1001, "amount", 49.99, "retry", true);
+logger.log(Level::Warning, "Odd args", "key");
 ```
 
 **Oczekiwane wyjście**
@@ -243,14 +242,13 @@ logger.log(Level::Error, "Payment failed", "order", 1001, "amount", 49.99, "retr
 [INFO] Server started
 [INFO] User logged in | user=anna id=42
 [ERROR] Payment failed | order=1001 amount=49.99 retry=true
+[WARNING] Odd args | key=?
 ```
-
-Wywołanie `logger.log(Level::Warning, "Odd args", "key");` ma się **nie skompilować** z komunikatem ze `static_assert`.
 
 **Wskazówki**
 
-* Pary najłatwiej przetworzyć rekurencyjnie: funkcja pomocnicza z parametrami `(os, const K& key, const V& value, const Rest&... rest)` wypisuje jedną parę i wywołuje samą siebie dla `rest...`, a przeciążenie bez argumentów kończy rekurencję.
-* Do pominięcia części ` | ...` użyj `if constexpr (sizeof...(Args) > 0)`.
+* Pary najłatwiej przetworzyć rekurencyjnie: funkcja pomocnicza z parametrami `(os, const K& key, const V& value, const Rest&... rest)` wypisuje jedną parę i wywołuje samą siebie dla `rest...`, a przeciążenie bez argumentów kończy rekurencję. Osobne przeciążenie z jednym argumentem obsłuży klucz bez wartości.
+* Część ` | ...` wypisuj osobną funkcją pomocniczą z dwoma przeciążeniami: bez argumentów (nic nie robi) oraz z co najmniej jednym argumentem (wypisuje ` |` i przekazuje argumenty dalej).
 * Fold widzi pojedyncze elementy paczki, a tu trzeba brać po dwa naraz, dlatego użyj rekurencji.
 
 ---

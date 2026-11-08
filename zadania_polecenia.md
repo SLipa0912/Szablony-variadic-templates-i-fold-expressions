@@ -49,7 +49,6 @@ Dla pustej paczki unarny fold jest dozwolony tylko dla operatorów `&&` (wynik `
 
 * Użyj binarnego foldu z wartością początkową: `(0 + ... + args)`.
 * Zastanów się, jaką wartość początkową wybrać dla mnożenia (element neutralny).
-* Dodaj kilka `static_assert`, np. `static_assert(fold_sum(1, 2, 3, 4) == 10);`. Dzięki `constexpr` sprawdzą się w czasie kompilacji.
 
 ---
 
@@ -125,7 +124,6 @@ Wymagania:
 
 * Pierwszy argument wypisz osobno (bez separatora), a pozostałe wyrażeniem `((os << sep << rest), ...);`. Wymaga to dwóch przeciążeń: jednego dla zerowej liczby argumentów i jednego z parametrami `First` i `Rest...`.
 * Alternatywa: jedna funkcja z flagą `bool first = true` i foldem po przecinku.
-* Do testów użyj `std::ostringstream` i porównaj wynik z oczekiwanym tekstem.
 
 ---
 

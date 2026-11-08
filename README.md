@@ -47,8 +47,8 @@ cmake --build build
 ```cmd
 cd zadanie1
 cmake -B build
-cmake --build build --config Release
-.\build\Release\zadanie1.exe
+cmake --build build
+.\build\Debug\zadanie1.exe
 ```
 
 #### MinGW / GCC (PowerShell / Command Prompt)

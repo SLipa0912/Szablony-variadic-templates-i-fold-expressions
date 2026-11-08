@@ -1,5 +1,7 @@
 # Treści zadań
 
+Szablony wariadyczne (variadic templates) i wyrażenia fold (fold expressions).
+
 * Przypomnienie składni fold dla operatora `op` i paczki `args`:
 
 | Nazwa | Składnia | Rozwija się do |
@@ -13,9 +15,9 @@ Dla pustej paczki unarny fold jest dozwolony tylko dla operatorów `&&` (wynik `
 
 ---
 
-## Zadanie 1: Suma i iloczyn wariadyczny (5 min)
+## Zadanie 1: Suma, iloczyn i kierunek foldu (7 min)
 
-**Cel:** pierwsze użycie wyrażeń fold z operatorami `+` i `*`.
+**Cel:** fold binarny z wartością początkową, różnica między foldem lewo- i prawostronnym oraz fold w `static_assert`.
 
 **Polecenie**
 
@@ -29,10 +31,13 @@ Dla pustej paczki unarny fold jest dozwolony tylko dla operatorów `&&` (wynik `
    template <typename... Args>
    constexpr auto fold_product(Args... args);
    ```
-3. Obie funkcje mają działać dla dowolnej liczby argumentów, także zerowej:
-   * `fold_sum()` zwraca `0`,
-   * `fold_product()` zwraca `1`.
-4. Obie funkcje mają działać dla typów całkowitych i zmiennoprzecinkowych (także mieszanych).
+   Dla pustej listy `fold_sum()` zwraca `0`, a `fold_product()` zwraca `1`.
+3. Obie funkcje mają przyjmować wyłącznie typy arytmetyczne. Dla innych typów (np. `std::string`) kompilacja ma kończyć się błędem ze `static_assert`, którego warunek sprawdza całą paczkę naraz.
+4. Napisz funkcje `fold_minus_left` i `fold_minus_right` o tej samej sygnaturze co `fold_sum`:
+   * `fold_minus_left(a1, a2, a3, ...)` oblicza `((a1 - a2) - a3) - ...`,
+   * `fold_minus_right(a1, a2, a3, ...)` oblicza `a1 - (a2 - (a3 - ...))`.
+
+   Obie wymagają co najmniej jednego argumentu (dla zerowej liczby argumentów mają się nie kompilować).
 
 **Oczekiwane wartości**
 
@@ -44,17 +49,24 @@ Dla pustej paczki unarny fold jest dozwolony tylko dla operatorów `&&` (wynik `
 | `fold_product(2, 3, 4)` | `24` |
 | `fold_product(1.5, 2, 4)` | `12` |
 | `fold_product()` | `1` |
+| `fold_minus_left(10, 3, 2)` | `5` |
+| `fold_minus_right(10, 3, 2)` | `9` |
+| `fold_minus_left(10, 4, 3, 1)` | `2` |
+| `fold_minus_right(10, 4, 3, 1)` | `8` |
+| `fold_minus_left(7)` i `fold_minus_right(7)` | `7` |
 
 **Wskazówki**
 
-* Użyj binarnego foldu z wartością początkową: `(0 + ... + args)`.
+* Dla sumy i iloczynu użyj binarnego foldu z wartością początkową: `(0 + ... + args)`.
 * Zastanów się, jaką wartość początkową wybrać dla mnożenia (element neutralny).
+* Warunek na typy zapisz jako fold po `&&` nad `std::is_arithmetic_v<Args>` (nagłówek `<type_traits>`).
+* Dla `fold_minus_left` i `fold_minus_right` użyj foldów unarnych, po jednym w każdym kierunku.
 
 ---
 
-## Zadanie 2: Sprawdzanie warunków i typów (5 min)
+## Zadanie 2: Sprawdzanie warunków i typów (10 min)
 
-**Cel:** fold z operatorem `&&` oraz użycie foldu w szablonie zmiennej.
+**Cel:** fold z operatorami `&&` i `||`, szablon zmiennej oraz wariadyczny szablon klasy.
 
 **Polecenie**
 
@@ -64,12 +76,27 @@ Dla pustej paczki unarny fold jest dozwolony tylko dla operatorów `&&` (wynik `
    constexpr bool all_true(const Args&... args);
    ```
    Dla pustej listy argumentów wynik ma być `true`.
-2. Napisz szablon zmiennej `all_same_v`, który sprawdza, czy wszystkie podane typy są identyczne z pierwszym:
+2. Napisz funkcję `any_true`, która zwraca `true`, gdy **co najmniej jeden** argument po rzutowaniu na `bool` jest prawdziwy. Dla pustej listy argumentów wynik ma być `false`.
+3. Napisz szablon zmiennej `all_same_v`, który sprawdza, czy wszystkie podane typy są identyczne z pierwszym:
    ```cpp
    template <typename T, typename... Ts>
    inline constexpr bool all_same_v = /* ... */;
    ```
    `all_same_v<int>` (jeden typ) ma być `true`.
+4. Napisz wariadyczny szablon klasy `TypeList` z trzema składowymi statycznymi:
+   ```cpp
+   template <typename... Ts>
+   struct TypeList {
+       static constexpr std::size_t size = /* ... */;                 // liczba typów na liście
+
+       template <typename T>
+       static constexpr bool contains = /* ... */;                    // czy T jest na liście
+
+       template <typename T>
+       static constexpr std::size_t count = /* ... */;                // ile razy T jest na liście
+   };
+   ```
+   Dla pustej listy: `size == 0`, `contains<T>` jest `false`, a `count<T>` wynosi `0`.
 
 **Oczekiwane wartości**
 
@@ -78,25 +105,37 @@ Dla pustej paczki unarny fold jest dozwolony tylko dla operatorów `&&` (wynik `
 | `all_true(true, 1, 2.5)` | `true` |
 | `all_true(true, 0, 3)` | `false` |
 | `all_true()` | `true` |
+| `any_true(false, 0, 3)` | `true` |
+| `any_true(0, false)` | `false` |
+| `any_true()` | `false` |
 | `all_same_v<int, int, int>` | `true` |
 | `all_same_v<int, int, double>` | `false` |
 | `all_same_v<int>` | `true` |
 | `all_same_v<int, const int>` | `false` |
+| `TypeList<int, char, int>::size` | `3` |
+| `TypeList<int, char>::contains<char>` | `true` |
+| `TypeList<int, char>::contains<double>` | `false` |
+| `TypeList<int, char, int>::count<int>` | `2` |
+| `TypeList<>::size` | `0` |
 
 **Wskazówki**
 
-* W `all_true` użyj `static_cast<bool>(args)` i foldu po `&&`.
+* W `all_true` i `any_true` użyj `static_cast<bool>(args)` i foldu unarnego po `&&` lub `||`.
 * W `all_same_v` użyj `std::is_same_v<T, Ts>` (nagłówek `<type_traits>`) i foldu po `&&`.
+* `size` to zadanie dla operatora `sizeof...`.
+* `contains` to fold po `||` nad `std::is_same_v<T, Ts>`.
+* `count` zbuduj z foldu binarnego prawostronnego `(wyrażenie + ... + 0)`, gdzie wyrażenie daje `1` dla pasującego typu i `0` dla pozostałych.
+
 
 ---
 
-## Zadanie 3: Formater strumieniowy z separatorem (10 min)
+## Zadanie 3: Fold po przecinku (12 min)
 
-**Cel:** fold po operatorze przecinka i unikanie nadmiarowego separatora.
+**Cel:** fold po operatorze przecinka w dwóch zastosowaniach: wypisywanie z separatorem oraz dodawanie do kontenera z perfect forwarding.
 
-**Polecenie**
+### Część A: `print_with_sep`
 
-Napisz funkcję `print_with_sep`, która drukuje do strumienia dowolną liczbę argumentów rozdzielonych separatorem:
+Napisz funkcję, która drukuje do strumienia dowolną liczbę argumentów rozdzielonych separatorem:
 
 ```cpp
 template <typename Sep, typename... Args>
@@ -125,15 +164,43 @@ Wymagania:
 * Pierwszy argument wypisz osobno (bez separatora), a pozostałe wyrażeniem `((os << sep << rest), ...);`. Wymaga to dwóch przeciążeń: jednego dla zerowej liczby argumentów i jednego z parametrami `First` i `Rest...`.
 * Alternatywa: jedna funkcja z flagą `bool first = true` i foldem po przecinku.
 
+### Część B: `emplace_all`
+
+Napisz funkcję, która dodaje wszystkie argumenty na koniec kontenera, zachowując rodzaj każdej wartości:
+
+```cpp
+template <typename Container, typename... Args>
+void emplace_all(Container& c, Args&&... args);
+```
+
+Wymagania:
+
+1. Dla każdego argumentu wywołaj `c.emplace_back(...)`, od lewej do prawej.
+2. Wartość lvalue ma zostać **skopiowana**, a wartość rvalue **przeniesiona**.
+3. Funkcja ma działać dla typów move-only, np. `std::unique_ptr<int>`.
+4. Dla zerowej liczby argumentów nic się nie dzieje.
+
+**Oczekiwane zachowanie**
+
+| Wywołanie | Wynik |
+|---|---|
+| `emplace_all(v, lvalue, Tracer(2), Tracer(3))` (`v` to `std::vector<Tracer>`, `Tracer` liczy kopie i przeniesienia) | 1 kopia, 2 przeniesienia |
+| `emplace_all(ptrs, std::make_unique<int>(10), std::make_unique<int>(20))` | kontener ma 2 elementy: `10` i `20` |
+| `emplace_all(names, "ala", std::string("ola"))` (`names` to `std::vector<std::string>`) | kontener ma 2 elementy: `"ala"` i `"ola"` |
+
+**Wskazówki**
+
+* Przyjmij argumenty jako `Args&&...` i przekaż je dalej przez `std::forward<Args>(args)` (nagłówek `<utility>`) w wyrażeniu pod foldem po przecinku.
+
 ---
 
-## Zadanie 4: System logowania kontekstowego (20 min)
+## Zadanie 4: System logowania kontekstowego (15 min)
 
 **Cel:** przetwarzanie argumentów w parach, `static_assert` na rozmiarze paczki (`sizeof...`) oraz rekurencyjne rozwijanie paczki.
 
 **Polecenie**
 
-Zaimplementuj klasę `StructuredLogger`:
+Zaimplementuj klasę `StructuredLogger`. Typ `Level` oraz funkcja `level_name(Level)`, która zwraca tekst `"DEBUG"`, `"INFO"`, `"WARNING"` lub `"ERROR"`, są już zdefiniowane w pliku i nie są częścią zadania.
 
 ```cpp
 enum class Level { Debug, Info, Warning, Error };
@@ -151,10 +218,9 @@ Wymagania:
 
 1. Argumenty `context` to pary **klucz, wartość**: `klucz1, wartość1, klucz2, wartość2, ...`. Klucze i wartości mogą mieć dowolne typy wypisywalne do strumienia.
 2. Liczba argumentów `context` musi być parzysta. Sprawdź to przez `static_assert(sizeof...(Args) % 2 == 0, "...")`, żeby błąd pojawiał się w czasie kompilacji.
-3. Format linii: `[POZIOM] komunikat`. Jeśli są dane kontekstowe, dopisz ` | klucz1=wartość1 klucz2=wartość2 ...`. Bez kontekstu nie wypisuj znaku `|`.
-4. Nazwy poziomów w wyjściu: `DEBUG`, `INFO`, `WARNING`, `ERROR`.
-5. Wartości `bool` wypisuj jako `true` / `false` (`std::boolalpha`).
-6. Każde wywołanie `log` kończy się znakiem nowej linii.
+3. Format linii: `[POZIOM] komunikat`, gdzie `POZIOM` to wynik `level_name(level)`. Jeśli są dane kontekstowe, dopisz ` | klucz1=wartość1 klucz2=wartość2 ...`. Bez kontekstu nie wypisuj znaku `|`.
+4. Wartości `bool` wypisuj jako `true` / `false` (`std::boolalpha`).
+5. Każde wywołanie `log` kończy się znakiem nowej linii.
 
 **Przykład użycia**
 
@@ -179,10 +245,10 @@ Wywołanie `logger.log(Level::Warning, "Odd args", "key");` ma się **nie skompi
 
 * Pary najłatwiej przetworzyć rekurencyjnie: funkcja pomocnicza z parametrami `(os, const K& key, const V& value, const Rest&... rest)` wypisuje jedną parę i wywołuje samą siebie dla `rest...`, a przeciążenie bez argumentów kończy rekurencję.
 * Do pominięcia części ` | ...` użyj `if constexpr (sizeof...(Args) > 0)`.
-* Zamianę `Level` na tekst zrób osobną funkcją z `switch`.
+
 ---
 
-## Zadanie 5: Silnik walidacji obiektów (15–20 min)
+## Zadanie 5: Silnik walidacji obiektów (15 min)
 
 **Cel:** fold z predykatami wywoływanymi na wspólnym obiekcie, krótkie spięcie (short-circuit) oraz zliczanie.
 
@@ -235,7 +301,7 @@ User bad{"", 15, "brak-maila"};
 | `validate_all(ok)` | `true` |
 | `count_failed(ok)` | `0` |
 
-**Test krótkiego spięcia**
+**Krótkie spięcie w praktyce**
 
 ```cpp
 int calls = 0;

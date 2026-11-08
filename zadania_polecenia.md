@@ -55,6 +55,8 @@ Dla pustej paczki unarny fold jest dozwolony tylko dla operatorów `&&` (wynik `
 | `fold_minus_right(10, 4, 3, 1)` | `8` |
 | `fold_minus_left(7)` i `fold_minus_right(7)` | `7` |
 
+Dla tych samych argumentów `fold_minus_left` i `fold_minus_right` dają różne wyniki, bo odejmowanie nie jest łączne. Dla `+` i `*` kierunek foldu nie ma znaczenia.
+
 **Wskazówki**
 
 * Dla sumy i iloczynu użyj binarnego foldu z wartością początkową: `(0 + ... + args)`.
@@ -118,6 +120,8 @@ Dla pustej paczki unarny fold jest dozwolony tylko dla operatorów `&&` (wynik `
 | `TypeList<int, char, int>::count<int>` | `2` |
 | `TypeList<>::size` | `0` |
 
+`std::is_same_v` rozróżnia `const` i referencje, dlatego `all_same_v<int, const int>` jest `false`.
+
 **Wskazówki**
 
 * W `all_true` i `any_true` użyj `static_cast<bool>(args)` i foldu unarnego po `&&` lub `||`.
@@ -163,6 +167,7 @@ Wymagania:
 
 * Pierwszy argument wypisz osobno (bez separatora), a pozostałe wyrażeniem `((os << sep << rest), ...);`. Wymaga to dwóch przeciążeń: jednego dla zerowej liczby argumentów i jednego z parametrami `First` i `Rest...`.
 * Alternatywa: jedna funkcja z flagą `bool first = true` i foldem po przecinku.
+* Operator przecinka gwarantuje kolejność wykonania od lewej do prawej, więc argumenty zostaną wypisane w podanej kolejności.
 
 ### Część B: `emplace_all`
 
@@ -191,6 +196,7 @@ Wymagania:
 **Wskazówki**
 
 * Przyjmij argumenty jako `Args&&...` i przekaż je dalej przez `std::forward<Args>(args)` (nagłówek `<utility>`) w wyrażeniu pod foldem po przecinku.
+* Przy `Args... args` (przez wartość) każdy argument byłby kopiowany, a `std::unique_ptr` w ogóle by się nie skompilował. Dlatego potrzebne jest `Args&&...` z `std::forward`.
 
 ---
 
@@ -245,6 +251,7 @@ Wywołanie `logger.log(Level::Warning, "Odd args", "key");` ma się **nie skompi
 
 * Pary najłatwiej przetworzyć rekurencyjnie: funkcja pomocnicza z parametrami `(os, const K& key, const V& value, const Rest&... rest)` wypisuje jedną parę i wywołuje samą siebie dla `rest...`, a przeciążenie bez argumentów kończy rekurencję.
 * Do pominięcia części ` | ...` użyj `if constexpr (sizeof...(Args) > 0)`.
+* Fold widzi pojedyncze elementy paczki, a tu trzeba brać po dwa naraz, dlatego użyj rekurencji.
 
 ---
 
@@ -311,6 +318,8 @@ validate_all(ok, always_fail, always_fail, always_fail);   // po wywołaniu: cal
 calls = 0;
 count_failed(ok, always_fail, always_fail, always_fail);   // po wywołaniu: calls == 3
 ```
+
+Różnica wynika z operatorów: `&&` przerywa obliczanie po pierwszym `false`, a `+` zawsze oblicza wszystkie operandy.
 
 **Wskazówki**
 

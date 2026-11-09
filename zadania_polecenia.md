@@ -15,7 +15,7 @@ Dla pustej paczki unarny fold jest dozwolony tylko dla operatorów `&&` (wynik `
 
 ---
 
-## Zadanie 1: Suma, iloczyn i kierunek foldu (7 min)
+## Zadanie 1: Suma, iloczyn i kierunek foldu
 
 **Cel:** fold binarny z wartością początkową oraz różnica między foldem lewo- i prawostronnym.
 
@@ -64,7 +64,7 @@ Dla tych samych argumentów `fold_minus_left` i `fold_minus_right` dają różne
 
 ---
 
-## Zadanie 2: Sprawdzanie warunków i typów (10 min)
+## Zadanie 2: Sprawdzanie warunków i typów
 
 **Cel:** fold z operatorami `&&` i `||`, szablon funkcji wywoływany tylko z typami (bez argumentów) oraz wariadyczny szablon klasy.
 
@@ -109,7 +109,7 @@ Dla tych samych argumentów `fold_minus_left` i `fold_minus_right` dają różne
 
 ---
 
-## Zadanie 3: Fold po przecinku (12 min)
+## Zadanie 3: Fold po przecinku
 
 **Cel:** fold po operatorze przecinka w dwóch zastosowaniach: wypisywanie z separatorem oraz dodawanie do kontenera z perfect forwarding.
 
@@ -176,7 +176,7 @@ Wymagania:
 
 ---
 
-## Zadanie 4: System logowania kontekstowego (15 min)
+## Zadanie 4: System logowania kontekstowego
 
 **Cel:** przetwarzanie argumentów w parach oraz rekurencyjne rozwijanie paczki z przeciążeniami dla przypadków brzegowych.
 
@@ -231,7 +231,7 @@ logger.log(Level::Warning, "Odd args", "key");
 
 ---
 
-## Zadanie 5: Silnik walidacji obiektów (15 min)
+## Zadanie 5: Silnik walidacji obiektów
 
 **Cel:** fold z predykatami wywoływanymi na wspólnym obiekcie, krótkie spięcie (short-circuit) oraz zliczanie.
 

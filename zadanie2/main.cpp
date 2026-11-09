@@ -8,6 +8,7 @@
 template <typename... Args>
 bool all_true(const Args&... args) {
     // TODO
+    return false;
 }
 
 // Zwraca true, jeśli co najmniej jeden argument jest "prawdziwy".
@@ -15,6 +16,7 @@ bool all_true(const Args&... args) {
 template <typename... Args>
 bool any_true(const Args&... args) {
     // TODO
+    return false;
 }
 
 // Zwraca true, jeśli wszystkie typy Ts... są identyczne z T.
@@ -23,6 +25,7 @@ bool any_true(const Args&... args) {
 template <typename T, typename... Ts>
 bool all_same() {
     // TODO
+    return false;
 }
 
 // Wariadyczny szablon klasy: lista typów.
@@ -31,18 +34,21 @@ struct TypeList {
     // Liczba typów na liście
     static std::size_t size() {
         // TODO
+        return 0;
     }
 
     // Czy T występuje na liście? Fold po || (dla pustej listy false).
     template <typename T>
     static bool contains() {
         // TODO
+        return false;
     }
 
     // Ile razy T występuje na liście? Binarny PRAWOSTRONNY fold: (pack + ... + init).
     template <typename T>
     static std::size_t count() {
         // TODO
+        return 0;
     }
 };
 

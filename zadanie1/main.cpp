@@ -8,12 +8,14 @@
 template <typename... Args>
 auto fold_sum(Args... args) {
     // TODO
+    return 0;
 }
 
 // Iloczyn wszystkich argumentów. Dla pustej listy zwraca 1 (element neutralny mnożenia).
 template <typename... Args>
 auto fold_product(Args... args) {
     // TODO
+    return 0;
 }
 
 // Unarny fold LEWOSTRONNY: ((a1 - a2) - a3) - ...
@@ -22,12 +24,14 @@ auto fold_product(Args... args) {
 template <typename... Args>
 auto fold_minus_left(Args... args) {
     // TODO
+    return 0;
 }
 
 // Unarny fold PRAWOSTRONNY: a1 - (a2 - (a3 - ...))
 template <typename... Args>
 auto fold_minus_right(Args... args) {
     // TODO
+    return 0;
 }
 
 int main() {

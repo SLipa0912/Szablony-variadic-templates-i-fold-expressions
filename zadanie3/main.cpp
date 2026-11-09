@@ -12,9 +12,7 @@
 
 // Brak argumentów do wypisania: nic nie drukujemy.
 template <typename Sep>
-void print_with_sep(std::ostream&, const Sep&) {
-    // TODO
-}
+void print_with_sep(std::ostream&, const Sep&) {}
 
 // Pierwszy argument wypisujemy bez separatora, każdy kolejny poprzedzamy separatorem.
 // Dzięki temu na końcu nie ma nadmiarowego separatora.
@@ -79,7 +77,7 @@ int main() {
     // Testy emplace_all: lvalue -> kopia, rvalue -> przeniesienie
     {
         std::vector<Tracer> v;
-        v.reserve(3);
+        v.reserve(3);  // bez realokacji, żeby nie liczyć dodatkowych przeniesień
         Tracer lvalue(1);
         Tracer::copies = 0;
         Tracer::moves = 0;

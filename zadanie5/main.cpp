@@ -11,6 +11,7 @@
 template <typename T, typename... Preds>
 bool validate_all([[maybe_unused]] const T& obj, const Preds&... preds) {
     // TODO
+    return false;
 }
 
 // Liczba predykatów, które zwróciły false dla obj.
@@ -20,6 +21,7 @@ bool validate_all([[maybe_unused]] const T& obj, const Preds&... preds) {
 template <typename T, typename... Preds>
 std::size_t count_failed([[maybe_unused]] const T& obj, const Preds&... preds) {
     // TODO
+    return 0;
 }
 
 // ---- Dane i predykaty do testów ----

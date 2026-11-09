@@ -18,9 +18,7 @@ const char* level_name(Level level) {
 namespace detail {
 
 // Koniec rekurencji: nie ma już nic do wypisania.
-inline void print_pairs(std::ostream&) {
-    // TODO
-}
+inline void print_pairs(std::ostream&) {}
 
 // Klucz bez wartości (nieparzysta liczba argumentów): wypisujemy "klucz=?".
 template <typename K>
@@ -37,9 +35,7 @@ void print_pairs(std::ostream& os, const K& key, const V& value, const Rest&... 
 }
 
 // Brak kontekstu: nie wypisujemy nic (także znaku '|').
-inline void print_context(std::ostream&) {
-    // TODO
-}
+inline void print_context(std::ostream&) {}
 
 // Jest kontekst: wypisujemy " |" i wszystkie pary.
 template <typename K, typename... Rest>
@@ -55,8 +51,8 @@ public:
 
     template <typename... Args>
     void log(Level level, const std::string& message, const Args&... context) {
-        // Zapamiętujemy flagi strumienia, żeby boolalpha nie "wyciekło" na zewnątrz.
-        // TODO
+        // TODO: wypisz do os_ linię w formacie z polecenia i zakończ ją znakiem nowej linii.
+        // Wartości bool mają być wypisywane jako true / false (std::boolalpha).
     }
 
 private:
@@ -114,15 +110,6 @@ int main() {
         StructuredLogger l(oss);
         l.log(Level::Warning, "Odd args 3", "a", 1, "b");
         assert(oss.str() == "[WARNING] Odd args 3 | a=1 b=?\n");
-    }
-    {
-        // boolalpha nie może zostać włączony na stałe w strumieniu użytkownika.
-        std::ostringstream oss;
-        StructuredLogger l(oss);
-        l.log(Level::Info, "flag", "ok", true);
-        oss.str("");
-        oss << true;
-        assert(oss.str() == "1");
     }
 
     std::cout << "Wszystkie testy przeszly.\n";

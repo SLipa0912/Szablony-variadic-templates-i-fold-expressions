@@ -17,13 +17,13 @@ Nazwa pliku wykonywalnego w każdym zadaniu jest taka sama jak nazwa jego katalo
 
 ## Podział czasu (55–60 min)
 
-| # | Katalog | Zadanie | Poziom | Szacowany czas |
+| # | Katalog | Zadanie | Poziom |
 |---|---|---|---|---|
-| 1 | `zadanie1/` | Suma, iloczyn i kierunek foldu (`fold_sum`, `fold_product`, `fold_minus_left`, `fold_minus_right`) | Proste | 7 min |
-| 2 | `zadanie2/` | Warunki i typy (`all_true`, `any_true`, `all_same`, `TypeList`) | Średnie | 10 min |
-| 3 | `zadanie3/` | Fold po przecinku (`print_with_sep`, `emplace_all`) | Średnie | 12 min |
-| 4 | `zadanie4/` | System logowania kontekstowego (`StructuredLogger`) | Zaawansowane | 15 min |
-| 5 | `zadanie5/` | Silnik walidacji obiektów (`validate_all`, `count_failed`) | Średnie | 15 min |
+| 1 | `zadanie1/` | Suma, iloczyn i kierunek foldu (`fold_sum`, `fold_product`, `fold_minus_left`, `fold_minus_right`) | Proste |
+| 2 | `zadanie2/` | Warunki i typy (`all_true`, `any_true`, `all_same`) | Proste |
+| 3 | `zadanie3/` | Fold po przecinku (`print_with_sep`, `emplace_all`) | Średnie |
+| 4 | `zadanie4/` | System logowania kontekstowego (`StructuredLogger`) | Zaawansowane |
+| 5 | `zadanie5/` | Silnik walidacji obiektów (`validate_all`, `count_failed`) | Średnie |
 
 ---
 
@@ -65,7 +65,7 @@ cmake --build build
 ## Krótki indeks zadań
 
 * **`zadanie1/`**: Funkcje `fold_sum` i `fold_product` (fold binarny z wartością początkową) oraz `fold_minus_left` i `fold_minus_right`, które pokazują różnicę między foldem lewo- i prawostronnym.
-* **`zadanie2/`**: Funkcje `all_true` i `any_true` (fold `&&` i `||`), szablon funkcji `all_same` oraz wariadyczny szablon klasy `TypeList<Ts...>` (`size`, `contains`, `count`).
+* **`zadanie2/`**: Funkcje `all_true` i `any_true` (fold `&&` i `||`), szablon funkcji `all_same`.
 * **`zadanie3/`**: Funkcja `print_with_sep` drukująca dowolną liczbę argumentów rozdzielonych separatorem, bez nadmiarowego separatora na końcu, oraz `emplace_all` z perfect forwarding (`Args&&...`, `std::forward`).
 * **`zadanie4/`**: Klasa `StructuredLogger` z metodą `log`, która przyjmuje poziom, komunikat oraz dowolną liczbę par klucz–wartość (przy nieparzystej liczbie argumentów ostatni klucz jest wypisywany jako `klucz=?`) i drukuje je w jednej linii.
 * **`zadanie5/`**: Funkcja `validate_all` uruchamiająca dowolną liczbę predykatów walidujących na podanym obiekcie (fold `&&`, z krótkim spięciem) oraz funkcja `count_failed` zliczająca niespełnione warunki (fold `+`).

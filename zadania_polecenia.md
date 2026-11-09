@@ -83,20 +83,6 @@ Dla tych samych argumentów `fold_minus_left` i `fold_minus_right` dają różne
    bool all_same();
    ```
    `all_same<int>()` (jeden typ) ma zwracać `true`.
-4. Napisz wariadyczny szablon klasy `TypeList` z trzema statycznymi funkcjami składowymi:
-   ```cpp
-   template <typename... Ts>
-   struct TypeList {
-       static std::size_t size();                 // liczba typów na liście
-
-       template <typename T>
-       static bool contains();                    // czy T jest na liście
-
-       template <typename T>
-       static std::size_t count();                // ile razy T jest na liście
-   };
-   ```
-   Dla pustej listy: `size()` zwraca `0`, `contains<T>()` zwraca `false`, a `count<T>()` zwraca `0`.
 
 **Oczekiwane wartości**
 
@@ -112,11 +98,6 @@ Dla tych samych argumentów `fold_minus_left` i `fold_minus_right` dają różne
 | `all_same<int, int, double>()` | `false` |
 | `all_same<int>()` | `true` |
 | `all_same<int, const int>()` | `false` |
-| `TypeList<int, char, int>::size()` | `3` |
-| `TypeList<int, char>::contains<char>()` | `true` |
-| `TypeList<int, char>::contains<double>()` | `false` |
-| `TypeList<int, char, int>::count<int>()` | `2` |
-| `TypeList<>::size()` | `0` |
 
 `std::is_same_v` rozróżnia `const` i referencje, dlatego `all_same<int, const int>()` zwraca `false`.
 
@@ -124,9 +105,6 @@ Dla tych samych argumentów `fold_minus_left` i `fold_minus_right` dają różne
 
 * W `all_true` i `any_true` użyj `static_cast<bool>(args)` i foldu unarnego po `&&` lub `||`.
 * W `all_same` użyj `std::is_same_v<T, Ts>` (nagłówek `<type_traits>`) i foldu po `&&`.
-* `size()` zwraca wynik operatora `sizeof...`.
-* `contains` to fold po `||` nad `std::is_same_v<T, Ts>`.
-* `count` zbuduj z foldu binarnego prawostronnego `(wyrażenie + ... + 0)`, gdzie wyrażenie daje `1` dla pasującego typu i `0` dla pozostałych.
 
 
 ---

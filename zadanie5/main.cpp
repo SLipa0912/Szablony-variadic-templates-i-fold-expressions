@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -38,12 +39,6 @@ struct MinAge {
     bool operator()(const User& u) const { return u.age >= min; }
 };
 
-// Sprawdza warunek; nie używamy assert, bo znika w trybie Release (NDEBUG).
-bool check(const std::string& name, bool condition) {
-    std::cout << (condition ? "[OK]   " : "[FAIL] ") << name << '\n';
-    return condition;
-}
-
 int main() {
     auto name_not_empty = [](const User& u) { return !u.name.empty(); };
     auto adult          = [](const User& u) { return u.age >= 18; };
@@ -53,31 +48,22 @@ int main() {
     const User bad{"", 15, "brak-maila"};
     const User half{"Bob", 15, "bob@example.com"};
 
-    bool all_ok = true;
+    // Walidacja
+    assert(validate_all(ok, name_not_empty, adult, email_has_at) == true);
+    assert(validate_all(bad, name_not_empty, adult, email_has_at) == false);
+    assert(validate_all(ok) == true);  // brak predykatów
 
-    std::cout << "Walidacja:\n";
-    all_ok &= check("validate_all(ok, 3 predykaty) == true",
-                    validate_all(ok, name_not_empty, adult, email_has_at) == true);
-    all_ok &= check("validate_all(bad, 3 predykaty) == false",
-                    validate_all(bad, name_not_empty, adult, email_has_at) == false);
-    all_ok &= check("validate_all(ok) == true  (brak predykatow)", validate_all(ok) == true);
+    // Zliczanie
+    assert(count_failed(ok, name_not_empty, adult, email_has_at) == 0);
+    assert(count_failed(bad, name_not_empty, adult, email_has_at) == 3);
+    assert(count_failed(half, name_not_empty, adult, email_has_at) == 1);
+    assert(count_failed(ok) == 0);  // brak predykatów
 
-    std::cout << "\nZliczanie:\n";
-    all_ok &= check("count_failed(ok, 3 predykaty) == 0",
-                    count_failed(ok, name_not_empty, adult, email_has_at) == 0);
-    all_ok &= check("count_failed(bad, 3 predykaty) == 3",
-                    count_failed(bad, name_not_empty, adult, email_has_at) == 3);
-    all_ok &= check("count_failed(half, 3 predykaty) == 1",
-                    count_failed(half, name_not_empty, adult, email_has_at) == 1);
-    all_ok &= check("count_failed(ok) == 0  (brak predykatow)", count_failed(ok) == 0);
+    // Różne rodzaje predykatów: funkcja, funktor, lambda
+    assert(validate_all(ok, has_name, MinAge{18}, email_has_at) == true);
+    assert(count_failed(bad, has_name, MinAge{18}, email_has_at) == 3);
 
-    std::cout << "\nRozne rodzaje predykatow (funkcja, funktor, lambda):\n";
-    all_ok &= check("validate_all(ok, has_name, MinAge{18}, lambda) == true",
-                    validate_all(ok, has_name, MinAge{18}, email_has_at) == true);
-    all_ok &= check("count_failed(bad, has_name, MinAge{18}, lambda) == 3",
-                    count_failed(bad, has_name, MinAge{18}, email_has_at) == 3);
-
-    std::cout << "\nKrotkie spiecie:\n";
+    // Krótkie spięcie: wywołania liczymy poza assert, żeby nie zależały od jego działania.
     int calls = 0;
     auto always_fail = [&calls](const User&) {
         ++calls;
@@ -85,11 +71,12 @@ int main() {
     };
 
     validate_all(ok, always_fail, always_fail, always_fail);
-    all_ok &= check("validate_all wywoluje predykat 1 raz (calls == 1)", calls == 1);
+    assert(calls == 1);
 
     calls = 0;
     count_failed(ok, always_fail, always_fail, always_fail);
-    all_ok &= check("count_failed wywoluje predykat 3 razy (calls == 3)", calls == 3);
+    assert(calls == 3);
 
-    return all_ok ? 0 : 1;
+    std::cout << "Wszystkie testy przeszly.\n";
+    return 0;
 }

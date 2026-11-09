@@ -1,3 +1,4 @@
+#include <cassert>
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -53,27 +54,12 @@ struct Tracer {
     Tracer(Tracer&& other) noexcept : id(other.id) { ++moves; }
 };
 
+// Wynik print_with_sep jako string
 template <typename Sep, typename... Args>
 std::string to_str(const Sep& sep, const Args&... args) {
     std::ostringstream oss;
     print_with_sep(oss, sep, args...);
     return oss.str();
-}
-
-// Sprawdzenia; nie używamy assert, bo znika w trybie Release (NDEBUG).
-bool check_eq(const std::string& actual, const std::string& expected) {
-    const bool ok = (actual == expected);
-    std::cout << (ok ? "[OK]   " : "[FAIL] ") << '"' << actual << '"';
-    if (!ok) {
-        std::cout << " (oczekiwano: \"" << expected << "\")";
-    }
-    std::cout << '\n';
-    return ok;
-}
-
-bool check_true(const std::string& name, bool condition) {
-    std::cout << (condition ? "[OK]   " : "[FAIL] ") << name << '\n';
-    return condition;
 }
 
 int main() {
@@ -83,43 +69,43 @@ int main() {
     print_with_sep(std::cout, " | ", "a", 'b', 3.5, std::string("str"));
     std::cout << "\n\n";
 
-    bool all_ok = true;
+    // Testy print_with_sep
+    assert(to_str(", ", 1, 2, 3) == "1, 2, 3");
+    assert(to_str(" | ", "a", 'b', 3.5, std::string("str")) == "a | b | 3.5 | str");
+    assert(to_str('-', 1, 2) == "1-2");
+    assert(to_str(";", 42) == "42");
+    assert(to_str(";") == "");
 
-    std::cout << "Testy print_with_sep:\n";
-    all_ok &= check_eq(to_str(", ", 1, 2, 3), "1, 2, 3");
-    all_ok &= check_eq(to_str(" | ", "a", 'b', 3.5, std::string("str")), "a | b | 3.5 | str");
-    all_ok &= check_eq(to_str('-', 1, 2), "1-2");
-    all_ok &= check_eq(to_str(";", 42), "42");
-    all_ok &= check_eq(to_str(";"), "");
-
-    std::cout << "\nTesty emplace_all:\n";
+    // Testy emplace_all: lvalue -> kopia, rvalue -> przeniesienie
     {
-        // Kopie i przeniesienia: lvalue -> kopia, rvalue -> przeniesienie.
         std::vector<Tracer> v;
-        v.reserve(3);  // bez realokacji, żeby nie liczyć dodatkowych przeniesień
+        v.reserve(3);
         Tracer lvalue(1);
         Tracer::copies = 0;
         Tracer::moves = 0;
         emplace_all(v, lvalue, Tracer(2), Tracer(3));
-        all_ok &= check_true("rozmiar kontenera == 3", v.size() == 3);
-        all_ok &= check_true("lvalue skopiowane raz (copies == 1)", Tracer::copies == 1);
-        all_ok &= check_true("rvalue przeniesione dwa razy (moves == 2)", Tracer::moves == 2);
+        assert(v.size() == 3);
+        assert(Tracer::copies == 1);
+        assert(Tracer::moves == 2);
     }
+    // Typ move-only: bez forwardingu (Args... przez wartość) by się nie skompilowało.
     {
-        // Typ move-only: bez forwardingu (Args... przez wartość) by się nie skompilowało.
         std::vector<std::unique_ptr<int>> ptrs;
         emplace_all(ptrs, std::make_unique<int>(10), std::make_unique<int>(20));
-        all_ok &= check_true("typ move-only (unique_ptr)",
-                             ptrs.size() == 2 && *ptrs[0] == 10 && *ptrs[1] == 20);
+        assert(ptrs.size() == 2);
+        assert(*ptrs[0] == 10);
+        assert(*ptrs[1] == 20);
     }
     {
         std::vector<std::string> names;
         emplace_all(names, "ala", std::string("ola"));
-        all_ok &= check_true("std::string z const char* i std::string",
-                             names.size() == 2 && names[0] == "ala" && names[1] == "ola");
+        assert(names.size() == 2);
+        assert(names[0] == "ala");
+        assert(names[1] == "ola");
         emplace_all(names);  // zero argumentów: nic się nie dzieje
-        all_ok &= check_true("zero argumentow nic nie dodaje", names.size() == 2);
+        assert(names.size() == 2);
     }
 
-    return all_ok ? 0 : 1;
+    std::cout << "Wszystkie testy przeszly.\n";
+    return 0;
 }

@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cstddef>
 #include <iostream>
 #include <type_traits>
@@ -5,88 +6,78 @@
 // Zwraca true, jeśli wszystkie argumenty są "prawdziwe" (po rzutowaniu na bool).
 // Unarny prawostronny fold po &&: dla pustej paczki wynik to true.
 template <typename... Args>
-constexpr bool all_true(const Args&... args) {
+bool all_true(const Args&... args) {
     // TODO
 }
 
 // Zwraca true, jeśli co najmniej jeden argument jest "prawdziwy".
 // Unarny prawostronny fold po ||: dla pustej paczki wynik to false.
 template <typename... Args>
-constexpr bool any_true(const Args&... args) {
+bool any_true(const Args&... args) {
     // TODO
 }
 
 // Zwraca true, jeśli wszystkie typy Ts... są identyczne z T.
+// Funkcja nie ma argumentów: typy podaje się jako argumenty szablonu.
 // Dla pojedynczego typu (pusta paczka Ts) wynik to true.
 template <typename T, typename... Ts>
-inline constexpr bool all_same_v = (std::is_same_v<T, Ts> && ...);
+bool all_same() {
+    // TODO
+}
 
 // Wariadyczny szablon klasy: lista typów.
 template <typename... Ts>
 struct TypeList {
     // Liczba typów na liście
-    static constexpr std::size_t size = sizeof...(Ts);
+    static std::size_t size() {
+        // TODO
+    }
 
     // Czy T występuje na liście? Fold po || (dla pustej listy false).
     template <typename T>
-    static constexpr bool contains = (std::is_same_v<T, Ts> || ...);
+    static bool contains() {
+        // TODO
+    }
 
     // Ile razy T występuje na liście? Binarny PRAWOSTRONNY fold: (pack + ... + init).
     template <typename T>
-    static constexpr std::size_t count =
-        ((std::is_same_v<T, Ts> ? std::size_t{1} : std::size_t{0}) + ... + std::size_t{0});
+    static std::size_t count() {
+        // TODO
+    }
 };
-
-// Testy w czasie kompilacji
-static_assert(all_true(true, 1, 2.5));
-static_assert(!all_true(true, 0, 3));
-static_assert(all_true());
-
-static_assert(any_true(false, 0, 3));
-static_assert(!any_true(0, false));
-static_assert(!any_true());
-
-static_assert(all_same_v<int, int, int>);
-static_assert(!all_same_v<int, int, double>);
-static_assert(all_same_v<int>);
-static_assert(!all_same_v<int, const int>);  // is_same_v rozróżnia const
-static_assert(!all_same_v<int, int&>);       // oraz referencje
-
-static_assert(TypeList<int, char, int>::size == 3);
-static_assert(TypeList<>::size == 0);
-static_assert(TypeList<int, char>::contains<char>);
-static_assert(!TypeList<int, char>::contains<double>);
-static_assert(!TypeList<>::contains<int>);
-static_assert(TypeList<int, char, int>::count<int> == 2);
-static_assert(TypeList<int, char>::count<double> == 0);
-static_assert(TypeList<>::count<int> == 0);
 
 int main() {
     int x = 5;
 
-    std::cout << std::boolalpha;
-    std::cout << "all_true(true, 1, 2.5)                  = " << all_true(true, 1, 2.5) << '\n';
-    std::cout << "all_true(true, 0, 3)                    = " << all_true(true, 0, 3) << '\n';
-    std::cout << "all_true(&x, x > 3)                     = " << all_true(&x, x > 3) << '\n';
-    std::cout << "all_true()                              = " << all_true() << '\n';
+    // all_true i any_true
+    assert(all_true(true, 1, 2.5) == true);
+    assert(all_true(true, 0, 3) == false);
+    assert(all_true(&x, x > 3) == true);
+    assert(all_true() == true);
+    assert(any_true(false, 0, 3) == true);
+    assert(any_true(0, false) == false);
+    assert(any_true() == false);
 
-    std::cout << "any_true(false, 0, 3)                   = " << any_true(false, 0, 3) << '\n';
-    std::cout << "any_true(0, false)                      = " << any_true(0, false) << '\n';
-    std::cout << "any_true()                              = " << any_true() << '\n';
+    // UWAGA: assert jest makrem, więc przecinki w argumentach szablonu
+    // (np. all_same<int, int, int>) trzeba zamknąć w dodatkowym nawiasie.
 
-    std::cout << "all_same_v<int, int, int>               = " << all_same_v<int, int, int> << '\n';
-    std::cout << "all_same_v<int, int, double>            = " << all_same_v<int, int, double> << '\n';
-    std::cout << "all_same_v<int>                         = " << all_same_v<int> << '\n';
-    std::cout << "all_same_v<int, const int>              = " << all_same_v<int, const int> << '\n';
+    // all_same
+    assert((all_same<int, int, int>() == true));
+    assert((all_same<int, int, double>() == false));
+    assert(all_same<int>() == true);
+    assert((all_same<int, const int>() == false));
+    assert((all_same<int, int&>() == false));
 
-    std::cout << "TypeList<int, char, int>::size          = "
-              << TypeList<int, char, int>::size << '\n';
-    std::cout << "TypeList<int, char>::contains<char>     = "
-              << TypeList<int, char>::contains<char> << '\n';
-    std::cout << "TypeList<int, char>::contains<double>   = "
-              << TypeList<int, char>::contains<double> << '\n';
-    std::cout << "TypeList<int, char, int>::count<int>    = "
-              << TypeList<int, char, int>::count<int> << '\n';
-    std::cout << "TypeList<>::size                        = " << TypeList<>::size << '\n';
+    // TypeList
+    assert((TypeList<int, char, int>::size() == 3));
+    assert(TypeList<>::size() == 0);
+    assert((TypeList<int, char>::contains<char>() == true));
+    assert((TypeList<int, char>::contains<double>() == false));
+    assert(TypeList<>::contains<int>() == false);
+    assert((TypeList<int, char, int>::count<int>() == 2));
+    assert((TypeList<int, char>::count<double>() == 0));
+    assert(TypeList<>::count<int>() == 0);
+
+    std::cout << "Wszystkie testy przeszly.\n";
     return 0;
 }

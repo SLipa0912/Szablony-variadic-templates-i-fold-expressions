@@ -15,7 +15,7 @@ Nazwa pliku wykonywalnego w każdym zadaniu jest taka sama jak nazwa jego katalo
 
 ---
 
-## Podział czasu (55–60 min)
+## Zadania do zrobienia
 
 | # | Katalog | Zadanie | Poziom |
 |---|---|---|---|

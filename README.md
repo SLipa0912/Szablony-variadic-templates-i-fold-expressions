@@ -2,7 +2,7 @@
 
 Każde zadanie znajduje się w osobnym katalogu (`zadanie1/`, `zadanie2/`, `zadanie3/`, `zadanie4/`, `zadanie5/`) i posiada własny plik `CMakeLists.txt`.
 
-Szczegółowe treści zadań, wyjaśnienia i przykładowe użycie znajdują się w pliku [zadania.md](zadania.md).
+Szczegółowe treści zadań, wyjaśnienia i przykładowe użycie znajdują się w pliku [zadania_polecenia.md](zadania_polecenia.md).
 
 ---
 

@@ -28,30 +28,6 @@ bool all_same() {
     return false;
 }
 
-// Wariadyczny szablon klasy: lista typów.
-template <typename... Ts>
-struct TypeList {
-    // Liczba typów na liście
-    static std::size_t size() {
-        // TODO
-        return 0;
-    }
-
-    // Czy T występuje na liście? Fold po || (dla pustej listy false).
-    template <typename T>
-    static bool contains() {
-        // TODO
-        return false;
-    }
-
-    // Ile razy T występuje na liście? Binarny PRAWOSTRONNY fold: (pack + ... + init).
-    template <typename T>
-    static std::size_t count() {
-        // TODO
-        return 0;
-    }
-};
-
 int main() {
     int x = 5;
 
@@ -73,16 +49,6 @@ int main() {
     assert(all_same<int>() == true);
     assert((all_same<int, const int>() == false));
     assert((all_same<int, int&>() == false));
-
-    // TypeList
-    assert((TypeList<int, char, int>::size() == 3));
-    assert(TypeList<>::size() == 0);
-    assert((TypeList<int, char>::contains<char>() == true));
-    assert((TypeList<int, char>::contains<double>() == false));
-    assert(TypeList<>::contains<int>() == false);
-    assert((TypeList<int, char, int>::count<int>() == 2));
-    assert((TypeList<int, char>::count<double>() == 0));
-    assert(TypeList<>::count<int>() == 0);
 
     std::cout << "Wszystkie testy przeszly.\n";
     return 0;

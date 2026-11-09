@@ -18,7 +18,7 @@ Nazwa pliku wykonywalnego w każdym zadaniu jest taka sama jak nazwa jego katalo
 ## Podział czasu (55–60 min)
 
 | # | Katalog | Zadanie | Poziom |
-|---|---|---|---|---|
+|---|---|---|---|
 | 1 | `zadanie1/` | Suma, iloczyn i kierunek foldu (`fold_sum`, `fold_product`, `fold_minus_left`, `fold_minus_right`) | Proste |
 | 2 | `zadanie2/` | Warunki i typy (`all_true`, `any_true`, `all_same`) | Proste |
 | 3 | `zadanie3/` | Fold po przecinku (`print_with_sep`, `emplace_all`) | Średnie |
